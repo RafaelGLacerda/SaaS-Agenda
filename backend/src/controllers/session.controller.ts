@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../prisma'
 
@@ -7,26 +6,20 @@ export async function authenticate(req: Request, res: Response) {
   const { email, password } = req.body
 
   if (!email || !password) {
-    return res.status(400).json({ error: 'Email e password are required' })
+    return res.status(400).json({ error: 'Email and password are required' })
   }
 
   const user = await prisma.user.findUnique({
-    where: { email }
+    where: { email },
   })
 
-  if (!user) {
-    return res.status(401).json({ error: 'Invalid credentials' })
-  }
-
-  const passwordMatch = await bcrypt.compare(password, user.password)
-
-  if (!passwordMatch) {
+  if (!user || user.password !== password) {
     return res.status(401).json({ error: 'Invalid credentials' })
   }
 
   const token = jwt.sign(
     { sub: user.id },
-    process.env.JWT_SECRET!,
+    process.env.JWT_SECRET as string,
     { expiresIn: '1d' }
   )
 
@@ -34,8 +27,8 @@ export async function authenticate(req: Request, res: Response) {
     user: {
       id: user.id,
       name: user.name,
-      email: user.email
+      email: user.email,
     },
-    token
+    token,
   })
 }
