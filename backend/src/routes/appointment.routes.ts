@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import { AppointmentController } from '../controllers/appointment.controller'
-import { auth } from '../middlewares/auth'
+import { ensureAuth } from '../middlewares/ensureAuth'
 
-const appointmentRoutes = Router()
+const router = Router()
 const controller = new AppointmentController()
 
-appointmentRoutes.use(auth)
+router.use(ensureAuth)
 
-appointmentRoutes.post('/appointments', controller.create)
+router.post('/', controller.create)
+router.get('/', controller.index)
 
-export { appointmentRoutes }
+export { router as appointmentRoutes }

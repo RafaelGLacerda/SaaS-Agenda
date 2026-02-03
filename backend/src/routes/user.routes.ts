@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { UserController } from '../controllers/user.controller'
 
-const userRoutes = Router()
+const routes = Router()
 const userController = new UserController()
 
-userRoutes.post('/', userController.create)
+routes.post('/users', userController.create)
 
-export { userRoutes }
+export { routes as userRoutes }

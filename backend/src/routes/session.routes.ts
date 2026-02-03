@@ -1,8 +1,10 @@
 import { Router } from 'express'
-import { authenticate } from '../controllers/session.controller'
+import { SessionController } from '../controllers/session.controller'
 
-const sessionRoutes = Router()
+const router = Router()
 
-sessionRoutes.post('/sessions', authenticate)
+const sessionController = new SessionController()
 
-export { sessionRoutes }
+router.post('/sessions', sessionController.authenticate)
+
+export { router as sessionRoutes }

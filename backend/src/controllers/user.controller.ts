@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import bcrypt from 'bcryptjs'
 import { prisma } from '../prisma'
 
 export class UserController {
@@ -21,14 +22,23 @@ export class UserController {
       })
     }
 
+    // 🔐 criptografa a senha
+    const hashedPassword = await bcrypt.hash(password, 8)
+
     const user = await prisma.user.create({
       data: {
         name,
         email,
-        password, // depois a gente criptografa
+        password: hashedPassword,
       },
     })
 
-    return res.status(201).json(user)
+    // ⚠️ nunca retornar senha
+    return res.status(201).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+    })
   }
 }
